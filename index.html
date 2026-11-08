@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<title>Caixinha de Carinho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Patrick+Hand&family=Nunito:wght@400;700;800&display=swap">
+<style>
+  /* Layout: uma coluna estreita pensada pro celular: nuvem que sorri, cartinha que abre, abraço */
+  :root {
+    --bg: #FFF1F4;
+    --dot: #F6CFDA;
+    --surface: #FFFFFF;
+    --ink: #4B2A3A;
+    --ink-soft: #85606F;
+    --line: #F3C9D5;
+    --berry: #E64D72;
+    --berry-ink: #FFFFFF;
+    --mint: #6FCFB4;
+    --butter: #FFC94A;
+    --sky: #9DBEFF;
+    --cloud: #FFFFFF;
+    --cloud-shade: #F6D3DE;
+    --paper: #FFE08A;
+    --paper-ink: #4B2A3A;
+
+    --font-display: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+    --font-body: "Nunito", "Segoe UI", system-ui, sans-serif;
+    --font-hand: "Patrick Hand", "Comic Sans MS", "Segoe Print", cursive;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #22172B; --dot: #4A3760; --surface: #33243F; --ink: #FCE8EF; --ink-soft: #CDB0C1;
+      --line: #4E3A5E; --berry: #FF7F9B; --berry-ink: #2A1420; --mint: #6CC7AE; --butter: #FFD36B;
+      --sky: #8FA9EA; --cloud: #F4ECF7; --cloud-shade: #B9A5CB;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #22172B; --dot: #4A3760; --surface: #33243F; --ink: #FCE8EF; --ink-soft: #CDB0C1;
+    --line: #4E3A5E; --berry: #FF7F9B; --berry-ink: #2A1420; --mint: #6CC7AE; --butter: #FFD36B;
+    --sky: #8FA9EA; --cloud: #F4ECF7; --cloud-shade: #B9A5CB;
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--dot) 1.2px, transparent 1.8px);
+    background-size: 24px 24px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wrap {
+    max-width: 460px;
+    margin: 0 auto;
+    padding-block: 32px 56px;
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    text-align: center;
+    overflow-x: clip;
+  }
+  p { margin: 0; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px dashed var(--berry); outline-offset: 4px; border-radius: 14px; }
+
+  .top { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+  h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(2.6rem, 12vw, 3.4rem); line-height: 1.05; text-wrap: balance; }
+  h1 .nome { color: var(--berry); text-decoration: underline wavy var(--butter); text-decoration-thickness: 3px; text-underline-offset: 9px; }
+  .lead { font-size: 1.08rem; max-width: 34ch; }
+
+  /* ---------- Nuvem ---------- */
+  .stage { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .bubble {
+    position: relative; align-self: flex-start; margin-left: 6%;
+    background: var(--surface); border: 2px solid var(--line); border-radius: 20px;
+    padding: 6px 16px; font-family: var(--font-hand); font-size: 1.25rem; line-height: 1.25;
+  }
+  .bubble::after {
+    content: ""; position: absolute; bottom: -9px; left: 34px; width: 14px; height: 14px;
+    background: var(--surface); border-right: 2px solid var(--line); border-bottom: 2px solid var(--line);
+    transform: rotate(45deg);
+  }
+  .bubble.pop { animation: pop .35s ease; }
+  .cloud-btn { background: none; border: 0; padding: 0; cursor: pointer; width: 100%; max-width: 340px; touch-action: manipulation; }
+  .cloud-btn svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .cloud-art { animation: float 4.5s ease-in-out infinite; }
+  .cloud-btn.squish { animation: squish .45s ease; }
+  .hint { font-family: var(--font-hand); font-size: 1.2rem; line-height: 1.3; color: var(--ink-soft); }
+  .meter { display: flex; gap: 6px; justify-content: center; }
+  .meter span { font-size: 1.7rem; line-height: 1; color: var(--line); transition: color .3s, transform .3s; }
+  .meter span.on { color: var(--berry); transform: scale(1.15); }
+
+  .c-body { fill: var(--cloud); }
+  .c-shade { fill: var(--cloud-shade); }
+  .c-ink { fill: var(--ink); }
+  .c-stroke { stroke: var(--ink); fill: none; stroke-width: 4; stroke-linecap: round; }
+  .c-cheek { fill: var(--berry); opacity: .25; transition: opacity .4s; }
+  .eye { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
+  #brows { transition: opacity .4s; }
+  #mouth { transition: d .4s ease; }
+  #rain { transition: opacity .6s; }
+  .drop { fill: var(--sky); animation: fall 1.1s linear infinite; }
+  #sun { opacity: 0; transform: scale(.55); transform-origin: 0 0; transition: opacity .6s, transform .8s cubic-bezier(.3,1.6,.5,1); }
+  #sun.up { transform: scale(1); }
+  .sun-core { fill: var(--butter); }
+  .ray { stroke: var(--butter); stroke-width: 5; stroke-linecap: round; }
+  .rays { transform-origin: 0 0; animation: spin 20s linear infinite; }
+  .arc { fill: none; stroke-width: 11; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.2s ease; }
+  .arc:nth-child(2) { transition-delay: .15s; }
+  .arc:nth-child(3) { transition-delay: .3s; }
+  .arc:nth-child(4) { transition-delay: .45s; }
+  #rainbow.on .arc { stroke-dashoffset: 0; }
+
+  /* ---------- Cartinhas ---------- */
+  .letters { display: flex; flex-direction: column; gap: 14px; }
+  h2 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 2rem; line-height: 1.1; }
+  .letters-sub { color: var(--ink-soft); margin-top: -6px; }
+  .env { background: var(--surface); border: 2px solid var(--line); border-radius: 20px; overflow: hidden; text-align: left; }
+  .env-front {
+    display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
+    padding: 16px 18px; background: none; border: 0; cursor: pointer; touch-action: manipulation;
+  }
+  .env-front:focus-visible { outline-offset: -6px; }
+  .envelope { position: relative; flex: none; width: 52px; height: 38px; border-radius: 7px; background: var(--env); }
+  .envelope::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 24px;
+    background: color-mix(in srgb, var(--env) 82%, #4B2A3A);
+    clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top;
+    transition: transform .45s ease;
+  }
+  .envelope .seal { position: absolute; left: 50%; top: 17px; transform: translate(-50%, -50%); color: #E64D72; font-size: .95rem; line-height: 1; transition: opacity .3s; }
+  .env.open .envelope::before { transform: scaleY(-1); }
+  .env.open .envelope .seal { opacity: 0; }
+  .env-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .env-text small { font-size: .85rem; font-weight: 700; color: var(--ink-soft); }
+  .env-text strong { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; line-height: 1.25; }
+  .letter {
+    margin: 0 14px 14px; padding: 14px 18px; border-radius: 12px;
+    background: var(--env); color: var(--paper-ink);
+    background-image: repeating-linear-gradient(transparent 0 29px, rgba(75,42,58,.14) 29px 30px);
+    font-family: var(--font-hand); font-size: 1.2rem; line-height: 30px;
+    animation: unfold .45s ease;
+  }
+  .carta-ass { display: block; text-align: right; margin-top: 6px; }
+  .sign { font-family: var(--font-hand); font-size: 1.3rem; color: var(--ink-soft); }
+
+  /* ---------- Abraço ---------- */
+  .hug { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .hug-btn {
+    width: 170px; height: 170px; border-radius: 50%; border: 0; cursor: pointer; touch-action: manipulation;
+    background: var(--berry); color: var(--berry-ink);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; line-height: 1.15;
+    box-shadow: 0 9px 0 color-mix(in srgb, var(--berry) 65%, #2A1420);
+    animation: pulse 2.4s ease-in-out infinite;
+    transition: transform .12s, box-shadow .12s;
+  }
+  .hug-btn .big { font-size: 2.5rem; line-height: 1; }
+  .hug-btn:active { transform: translateY(6px) scale(.97); box-shadow: 0 3px 0 color-mix(in srgb, var(--berry) 65%, #2A1420); }
+  .hug-btn:focus-visible { border-radius: 50%; }
+  .hug-msg { font-family: var(--font-hand); font-size: 1.2rem; line-height: 1.3; max-width: 30ch; min-height: 1.3em; }
+
+  .heart-float {
+    position: fixed; pointer-events: none; line-height: 1; z-index: 50;
+    transform: translate(-50%, -50%); animation: heart 1.3s ease-out forwards;
+  }
+
+  @keyframes float { 50% { transform: translateY(-8px); } }
+  @keyframes squish { 30% { transform: scale(1.06, .92); } 60% { transform: scale(.96, 1.04); } }
+  @keyframes pop { 0% { transform: scale(.8); opacity: .4; } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+  @keyframes fall { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(34px); opacity: 0; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes heart {
+    0% { transform: translate(-50%, -50%) scale(.5); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(1.15); opacity: 0; }
+  }
+  @keyframes unfold { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+  @keyframes pulse { 50% { transform: scale(1.04); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cloud-art, .eye, .drop, .rays, .hug-btn, .cloud-btn.squish, .bubble.pop, .letter { animation: none; }
+    .heart-float { animation: fadeonly .8s ease forwards; }
+    @keyframes fadeonly { from { opacity: 1; } to { opacity: 0; } }
+  }
+</style>
+</head>
+<body>
+
+<main class="wrap">
+  <header class="top">
+    <h1>Oi, <span class="nome" id="nome">amiga</span>.</h1>
+    <p class="lead">fiz essa paginazinha porque um "tô aqui" por mensagem parecia pouco. então toma, é sua.</p>
+  </header>
+
+  <section class="stage" aria-label="Nuvenzinha">
+    <p class="bubble" id="bubble" aria-live="polite">acordei meio chuvosa hoje...</p>
+    <button class="cloud-btn" id="cloudBtn" type="button" aria-label="Fazer carinho na nuvem">
+      <svg viewBox="0 0 260 235" aria-hidden="true">
+        <defs>
+          <g id="cloudShape">
+            <circle cx="80" cy="126" r="38"/>
+            <circle cx="124" cy="98" r="50"/>
+            <circle cx="174" cy="108" r="40"/>
+            <circle cx="202" cy="138" r="30"/>
+            <rect x="46" y="118" width="186" height="58" rx="29"/>
+          </g>
+        </defs>
+        <g id="rainbow">
+          <path class="arc" pathLength="1" d="M17 150 A118 118 0 0 1 253 150" style="stroke: var(--berry)"/>
+          <path class="arc" pathLength="1" d="M29 150 A106 106 0 0 1 241 150" style="stroke: var(--butter)"/>
+          <path class="arc" pathLength="1" d="M41 150 A94 94 0 0 1 229 150" style="stroke: var(--mint)"/>
+          <path class="arc" pathLength="1" d="M53 150 A82 82 0 0 1 217 150" style="stroke: var(--sky)"/>
+        </g>
+        <g transform="translate(214,48)">
+          <g id="sun">
+            <g class="rays">
+              <line class="ray" x1="0" y1="-30" x2="0" y2="-40"/>
+              <line class="ray" x1="21" y1="-21" x2="28" y2="-28"/>
+              <line class="ray" x1="30" y1="0" x2="40" y2="0"/>
+              <line class="ray" x1="21" y1="21" x2="28" y2="28"/>
+              <line class="ray" x1="0" y1="30" x2="0" y2="40"/>
+              <line class="ray" x1="-21" y1="21" x2="-28" y2="28"/>
+              <line class="ray" x1="-30" y1="0" x2="-40" y2="0"/>
+              <line class="ray" x1="-21" y1="-21" x2="-28" y2="-28"/>
+            </g>
+            <circle class="sun-core" r="22"/>
+          </g>
+        </g>
+        <g id="rain">
+          <g transform="translate(86,186)"><path class="drop" d="M0 0 C4 6 6 9 6 12 A6 6 0 0 1 -6 12 C-6 9 -4 6 0 0Z"/></g>
+          <g transform="translate(112,190)"><path class="drop" style="animation-delay:.45s" d="M0 0 C4 6 6 9 6 12 A6 6 0 0 1 -6 12 C-6 9 -4 6 0 0Z"/></g>
+          <g transform="translate(138,186)"><path class="drop" style="animation-delay:.2s" d="M0 0 C4 6 6 9 6 12 A6 6 0 0 1 -6 12 C-6 9 -4 6 0 0Z"/></g>
+          <g transform="translate(164,190)"><path class="drop" style="animation-delay:.7s" d="M0 0 C4 6 6 9 6 12 A6 6 0 0 1 -6 12 C-6 9 -4 6 0 0Z"/></g>
+          <g transform="translate(190,186)"><path class="drop" style="animation-delay:.35s" d="M0 0 C4 6 6 9 6 12 A6 6 0 0 1 -6 12 C-6 9 -4 6 0 0Z"/></g>
+        </g>
+        <g class="cloud-art">
+          <use href="#cloudShape" class="c-shade" transform="translate(0,9)"/>
+          <use href="#cloudShape" class="c-body"/>
+          <ellipse class="c-cheek" cx="100" cy="148" rx="11" ry="6.5"/>
+          <ellipse class="c-cheek" cx="174" cy="148" rx="11" ry="6.5"/>
+          <ellipse class="c-ink eye" cx="117" cy="130" rx="6" ry="8"/>
+          <ellipse class="c-ink eye" cx="157" cy="130" rx="6" ry="8"/>
+          <g id="brows">
+            <path class="c-stroke" d="M106 115 L124 109"/>
+            <path class="c-stroke" d="M150 109 L168 115"/>
+          </g>
+          <path class="c-stroke" id="mouth" d="M125 154 Q137 144 149 154"/>
+        </g>
+      </svg>
+    </button>
+    <div class="meter" id="meter" aria-hidden="true"><span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span></div>
+    <p class="hint" id="hint" aria-live="polite">aperta a nuvem, ela tá precisando de carinho (igual você, talvez)</p>
+  </section>
+
+  <section class="letters" id="letters" aria-labelledby="cartas">
+    <h2 id="cartas">Abra quando...</h2>
+    <p class="letters-sub">escrevi umas cartinhas. pode abrir todas de uma vez, eu sei que você vai.</p>
+
+    <article class="env" style="--env: #FFC9D6">
+      <button class="env-front" type="button" aria-expanded="false" aria-controls="carta1">
+        <span class="envelope" aria-hidden="true"><span class="seal">♥</span></span>
+        <span class="env-text"><small>Abra quando você...</small><strong>sentir que o dia tá cinza</strong></span>
+      </button>
+      <p class="letter" id="carta1" hidden>se o dia tá cinza, faz igual a nuvem: deixa alguém te dar carinho. pode ser eu. me manda mensagem, nem que seja só um emoji, que eu apareço. e enquanto isso coloca aquela música que você ama e canta errado mesmo.</p>
+    </article>
+
+    <article class="env" style="--env: #CFE0FF">
+      <button class="env-front" type="button" aria-expanded="false" aria-controls="carta2">
+        <span class="envelope" aria-hidden="true"><span class="seal">♥</span></span>
+        <span class="env-text"><small>Abra quando você...</small><strong>esquecer o quanto é especial</strong></span>
+      </button>
+      <p class="letter" id="carta2" hidden>sério, às vezes acho que você não faz ideia do quanto é legal. a gente fica melhor perto de você, eu pelo menos fico. se esquecer disso, volta aqui e lê de novo. quantas vezes precisar.</p>
+    </article>
+
+    <article class="env" style="--env: #BDEBDD">
+      <button class="env-front" type="button" aria-expanded="false" aria-controls="carta3">
+        <span class="envelope" aria-hidden="true"><span class="seal">♥</span></span>
+        <span class="env-text"><small>Abra quando você...</small><strong>pensar em desistir</strong></span>
+      </button>
+      <p class="letter" id="carta3" hidden>pode ficar de pijama o dia inteiro, pode chorar, pode reclamar de tudo comigo. isso não é desistir, é descansar. depois a gente levanta, junto, no seu tempo.</p>
+    </article>
+
+    <article class="env" style="--env: #FFE08A">
+      <button class="env-front" type="button" aria-expanded="false" aria-controls="carta4">
+        <span class="envelope" aria-hidden="true"><span class="seal">♥</span></span>
+        <span class="env-text"><small>Abra quando você...</small><strong>precisar rir um pouquinho</strong></span>
+      </button>
+      <p class="letter" id="carta4" hidden>Fato científico: 100% das pessoas que abriram esta carta são incríveis. A amostra é pequena, mas a conclusão é confiabilíssima. Confirmado por mim e assinado com coraçãozinho.<span class="carta-ass">João</span></p>
+    </article>
+  </section>
+
+  <section class="hug">
+    <button class="hug-btn" id="hugBtn" type="button">
+      <span class="big" aria-hidden="true">♥</span>
+      <span id="hugLabel">pega um abraço</span>
+    </button>
+    <p class="hug-msg" id="hugMsg" aria-live="polite"></p>
+  </section>
+
+  <p class="sign" id="assinatura">Te amo muitão, viu? ♥</p>
+</main>
+
+<script>
+  // Personalize aqui
+  const NOME = "Sophia";
+  const ASSINATURA = "Te amo muitão, viu? ♥";
+
+  document.getElementById("nome").textContent = NOME;
+  document.getElementById("assinatura").textContent = ASSINATURA;
+
+  const CORES = ["var(--berry)", "var(--mint)", "var(--butter)", "var(--sky)"];
+
+  function reiniciar(el, classe) {
+    el.classList.remove(classe);
+    void el.offsetWidth;
+    el.classList.add(classe);
+  }
+
+  function coracoes(x, y, n, alcance, explosao) {
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement("span");
+      s.className = "heart-float";
+      s.textContent = "♥";
+      s.style.left = x + "px";
+      s.style.top = y + "px";
+      const dx = (Math.random() * 2 - 1) * alcance;
+      const dy = explosao ? (Math.random() * 2 - 1.3) * alcance : -(40 + Math.random() * alcance);
+      s.style.setProperty("--dx", dx.toFixed(0) + "px");
+      s.style.setProperty("--dy", dy.toFixed(0) + "px");
+      s.style.setProperty("--rot", (Math.random() * 60 - 30).toFixed(0) + "deg");
+      s.style.color = CORES[i % CORES.length];
+      s.style.fontSize = (14 + Math.random() * 20).toFixed(0) + "px";
+      s.style.animationDelay = (Math.random() * 0.15).toFixed(2) + "s";
+      s.addEventListener("animationend", () => s.remove());
+      document.body.appendChild(s);
+    }
+  }
+
+  /* ---------- Nuvem ---------- */
+  const cloudBtn = document.getElementById("cloudBtn");
+  const mouth = document.getElementById("mouth");
+  const brows = document.getElementById("brows");
+  const cheeks = document.querySelectorAll(".c-cheek");
+  const rain = document.getElementById("rain");
+  const sun = document.getElementById("sun");
+  const rainbow = document.getElementById("rainbow");
+  const bubble = document.getElementById("bubble");
+  const meter = document.querySelectorAll("#meter span");
+  const hint = document.getElementById("hint");
+
+  const falas = ["hihi", "de novo!", "tá parando de chover...", "só mais um!!", "SOL!!"];
+  const extras = ["cê é muito querida, sabia?", "tô aqui, viu", `ei ${NOME}, sorri pra mim`, "pode apertar mais, eu gosto"];
+  let carinho = 0;
+  let extra = 0;
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  function desenhar() {
+    const t = carinho / 5;
+    const ponta = lerp(154, 148, t);
+    const meio = lerp(144, 166, t);
+    mouth.setAttribute("d", `M125 ${ponta.toFixed(1)} Q137 ${meio.toFixed(1)} 149 ${ponta.toFixed(1)}`);
+    brows.style.opacity = Math.max(0, 1 - t * 1.6).toFixed(2);
+    cheeks.forEach(c => { c.style.opacity = (0.25 + 0.55 * t).toFixed(2); });
+    rain.style.opacity = (1 - t).toFixed(2);
+    sun.style.opacity = Math.max(0, (carinho - 2) / 3).toFixed(2);
+    sun.classList.toggle("up", carinho >= 3);
+    rainbow.classList.toggle("on", carinho >= 5);
+    meter.forEach((h, i) => h.classList.toggle("on", i < carinho));
+  }
+
+
+  cloudBtn.addEventListener("click", e => {
+    let x = e.clientX, y = e.clientY;
+    if (!x && !y) {
+      const r = cloudBtn.getBoundingClientRect();
+      x = r.left + r.width / 2; y = r.top + r.height / 2;
+    }
+    if (carinho < 5) {
+      carinho++;
+      bubble.textContent = falas[carinho - 1];
+      if (carinho === 5) {
+        hint.textContent = "ela ficou feliz :) agora desce aí que tem cartinha";
+      } else {
+        hint.textContent = `falta${5 - carinho === 1 ? "" : "m"} ${5 - carinho}`;
+      }
+    } else {
+      bubble.textContent = extras[extra++ % extras.length];
+    }
+    reiniciar(bubble, "pop");
+    desenhar();
+    coracoes(x, y, carinho >= 5 ? 9 : 5, 60, false);
+    reiniciar(cloudBtn, "squish");
+  });
+
+  /* ---------- Cartinhas ---------- */
+  document.querySelectorAll(".env-front").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const env = btn.closest(".env");
+      const aberta = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!aberta));
+      env.classList.toggle("open", !aberta);
+      env.querySelector(".letter").hidden = aberta;
+    });
+  });
+
+  /* ---------- Abraço ---------- */
+  const hugBtn = document.getElementById("hugBtn");
+  const hugLabel = document.getElementById("hugLabel");
+  const hugMsg = document.getElementById("hugMsg");
+  let abracos = 0;
+
+  hugBtn.addEventListener("click", () => {
+    abracos++;
+    const r = hugBtn.getBoundingClientRect();
+    coracoes(r.left + r.width / 2, r.top + r.height / 2, 28, 170, true);
+    hugLabel.textContent = "mais um";
+    hugMsg.textContent = abracos === 1
+      ? "abraço enviado! esse vale até a gente se ver, aí eu te dou um de verdade."
+      : `${abracos} abraços. pode pegar mais, o estoque é infinito`;
+  });
+
+  desenhar();
+</script>
+</body>
+</html>
