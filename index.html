@@ -107,8 +107,8 @@
 
   .c-body { fill: var(--cloud); }
   .c-shade { fill: var(--cloud-shade); }
-  .c-ink { fill: var(--ink); }
-  .c-stroke { stroke: var(--ink); fill: none; stroke-width: 4; stroke-linecap: round; }
+  .c-ink { fill: #4B2A3A; }
+  .c-stroke { stroke: #4B2A3A; fill: none; stroke-width: 4; stroke-linecap: round; }
   .c-cheek { fill: var(--berry); opacity: .25; transition: opacity .4s; }
   .eye { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
   #brows { transition: opacity .4s; }
@@ -120,11 +120,11 @@
   .sun-core { fill: var(--butter); }
   .ray { stroke: var(--butter); stroke-width: 5; stroke-linecap: round; }
   .rays { transform-origin: 0 0; animation: spin 20s linear infinite; }
-  .arc { fill: none; stroke-width: 11; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.2s ease; }
+  .arc { fill: none; stroke-width: 11; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; transition: stroke-dashoffset 1.2s ease, opacity .2s; }
   .arc:nth-child(2) { transition-delay: .15s; }
   .arc:nth-child(3) { transition-delay: .3s; }
   .arc:nth-child(4) { transition-delay: .45s; }
-  #rainbow.on .arc { stroke-dashoffset: 0; }
+  #rainbow.on .arc { stroke-dashoffset: 0; opacity: 1; }
 
   /* ---------- Cartinhas ---------- */
   .letters { display: flex; flex-direction: column; gap: 14px; }
